@@ -32,7 +32,7 @@ await conn.sendMessage(m.chat, { video: video, caption: HS, mimetype: 'video/mp4
 console.error(error)    
 }}
 
-handler.command = ['ytmp4']
-handler.help = ['ytmp42']
+handler.command = ['ytmp2']
+handler.help = ['ytmp2']
 handler.tags = ['downloaer']
 export default handler
