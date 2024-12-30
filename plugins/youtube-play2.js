@@ -43,7 +43,7 @@ console.error(error)
 }}
 
 
-handler.command = ['play']
+handler.command = ['play2']
 export default handler
 
 function eYear(txt) {
