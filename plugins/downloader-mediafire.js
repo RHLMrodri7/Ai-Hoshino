@@ -1,41 +1,41 @@
-import Starlights from "@StarlightsTeam/Scraper"
+/* 
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-if (!args[0]) return conn.reply(m.chat, '🚩 Ingrese el enlace de un archivo de Mediafire.', m, rcanal)
-if (!args[0].match(/mediafire/gi)) return conn.reply(m.chat, 'El enlace deve ser de un archivo de Mediafire.', m, rcanal)
-await m.react('🕓')
+*❀ By JTxs*
+
+[ Canal Principal ] :
+https://whatsapp.com/channel/0029VaeQcFXEFeXtNMHk0D0n
+
+[ Canal Rikka Takanashi Bot ] :
+https://whatsapp.com/channel/0029VaksDf4I1rcsIO6Rip2X
+
+[ Canal StarlightsTeam] :
+https://whatsapp.com/channel/0029VaBfsIwGk1FyaqFcK91S
+
+[ HasumiBot FreeCodes ] :
+https://whatsapp.com/channel/0029Vanjyqb2f3ERifCpGT0W
+*/
+
+// *[ ❀ MEDIAFIRE ]*
+import fetch from 'node-fetch';
+
+let HS = async (m, { conn, text }) => {
+if (!text) return conn.reply(m.chat, `❀ Ingresa un link de mediafire`, m)
+
 try {
-let { title, ext, aploud, size, dl_url } = await Starlights.mediafire(args[0])
-let txt = `乂  *M E D I A F I R E  -  D O W N L O A D*\n\n`
-    txt += `	✩  *Nombre* : ${title}\n`
-    txt += `	✩  *Peso* : ${size}\n`
-    txt += `	✩  *Publicado* : ${aploud}\n`
-    txt += `	✩  *MimeType* : ${ext}\n\n`
-    txt += `*- ↻ El archivo se esta enviando espera un momento, soy lenta. . .*`
-let img = await (await fetch('https://i.ibb.co/wLQFn7q/logo-mediafire.jpg')).buffer()
-await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
-await conn.sendFile(m.chat, dl_url, title, null, m, null, { mimetype: ext, asDocument: true })
-await m.react('✅')
-} catch {
-try {
-let { title, ext, aploud, size, dl_url } = await Starlights.mediafireV2(args[0])
-let txt = `乂  *M E D I A F I R E  -  D O W N L O A D*\n\n`
-    txt += `	✩  *Nombre* : ${title}\n`
-    txt += `	✩  *Peso* : ${size}\n`
-    txt += `	✩  *Publicado* : ${aploud}\n`
-    txt += `	✩  *MimeType* : ${ext}\n\n`
-    txt += `*- ↻ El archivo se esta enviando espera un momento, soy lenta. . .*`
-let img = await (await fetch('https://i.ibb.co/wLQFn7q/logo-mediafire.jpg')).buffer()
-await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
-await conn.sendFile(m.chat, dl_url, title, null, m, null, { mimetype: ext, asDocument: true })
-await m.react('✅')
-} catch {
-await m.react('✖️')
-}}}
+let api = await fetch(`https://restapi.apibotwa.biz.id/api/mediafire?url=${text}`)
+let json = await api.json()
+let { filename, type, size, uploaded, ext, mimetype, download:dl_url } = json.data.response
+m.reply(`*${filename}*
 
-handler.help = ['mediafire'].map(v => v + ' *<url>*')
-handler.tags = ['downloader', 'premium']
-handler.command = ['mediafire', 'mdfire', 'mf']
-handler.premium = true 
+- *Tipo :* ${type}
+- *Tamaño :* ${size}
+- *Creado :* ${uploaded}`)
+await conn.sendFile(m.chat, dl_url, filename, null, m, null, { mimetype: ext, asDocument: true })
 
-export default handler
+} catch (error) {
+console.error(error)
+}}
+
+HS.command = ['mediafire']
+
+export default HS
