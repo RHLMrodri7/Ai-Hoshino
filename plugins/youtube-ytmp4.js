@@ -1,22 +1,25 @@
 import fetch from 'node-fetch'
 
-let HS = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) {
-return conn.reply(m.chat, `❀ Ingresa el link de un video de youtube `, m)
-}
-    
+let handler = async (m, { conn, command, text, usedPrefix }) => {
+if (!text) return conn.reply(m.chat, `❀ Ingresa un link de youtube`, m)
+
 try {
-let calidad = '360' // Calidades disponibles : 144, 240, 360, 480, 720, 1080, 1440, 2160
-let api = await fetch(`https://api.giftedtech.my.id/api/download/dlmp4q?apikey=gifted&quality=${calidad}&url=${text}`)
+let api = await fetch(`https://axeel.my.id/api/download/video?url=${text}`)
 let json = await api.json()
-let { quality, title, download_url, thumbnail } = json.result
-
-
-await conn.sendMessage(m.chat, { video: { url: download_url }, caption: `${title}`, mimetype: 'video/mp4', fileName: `${title}` + `.mp4`}, {quoted: m })
+let { title, views, likes, description, author } = json.metadata
+let HS = `- *Titulo :* ${title}
+- *Descripcion :* ${description}
+- *Visitas :* ${views}
+- *Likes :* ${likes}
+- *Autor :* ${author}
+- *Tamaño :* ${json.downloads.size}
+`
+await conn.sendFile(m.chat, json.downloads.url, 'HasumiBotFreeCodes.mp4', HS, m)
 } catch (error) {
 console.error(error)
 }}
 
-HS.command = /^(ytmp4)$/i
-
-export default HS
+handler.command = /^(ytmp4)$/i
+handler.help = ['ytmp4']
+handler.tags = ['downloader']
+export default handler
