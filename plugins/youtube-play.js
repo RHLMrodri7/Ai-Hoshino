@@ -1,58 +1,41 @@
-import fetch from "node-fetch"
-import yts from "yt-search"
+/* 
 
-let handler = async (m, { conn, args }) => {
-  const text = args.join(" ") || m.quoted?.text || m.quoted?.caption || m.quoted?.description || ""
-  if (!text.trim()) return m.reply("Masukkan kata kunci pencarian")
-  await m.reply("Tunggu sebentar...")
+*❀ By JTxs*
 
-  const res = await yts(text)
-  const vid = res.videos[0]
-  if (!vid) return m.reply("Video tidak ditemukan. Silakan coba kata kunci lain")
+[ Canal Principal ] :
+https://whatsapp.com/channel/0029VaeQcFXEFeXtNMHk0D0n
 
-  const { title, thumbnail, timestamp, views, ago, url } = vid
-  const formattedViews = parseInt(views).toLocaleString("id-ID") + " tayangan"
-  const captvid = `*title:* ${title}\n*Duracion:* ${timestamp}\n*Views:* ${formattedViews}\n*Upload:* ${ago}\n*Link:* ${url}`
+[ Canal Rikka Takanashi Bot ] :
+https://whatsapp.com/channel/0029VaksDf4I1rcsIO6Rip2X
 
-  const ytthumb = (await conn.getFile(thumbnail))?.data
+[ Canal StarlightsTeam] :
+https://whatsapp.com/channel/0029VaBfsIwGk1FyaqFcK91S
 
-  const infoReply = {
-    contextInfo: {
-      externalAdReply: {
-        body: "Sedang mengunduh hasil, harap tunggu...",
-        mediaType: 1,
-        mediaUrl: url,
-        previewType: 0,
-        renderLargerThumbnail: true,
-        sourceUrl: url,
-        thumbnail: ytthumb,
-        title: "Y O U T U B E - P L A Y"
-      }
-    }
-  }
+[ HasumiBot FreeCodes ] :
+https://whatsapp.com/channel/0029Vanjyqb2f3ERifCpGT0W
+*/
 
-  await conn.reply(m.chat, captvid, m, infoReply)
+// *[ ❀ PLAY ]*
+import fetch from 'node-fetch'
 
-  const apiRes = await fetch(`https://api.zenkey.my.id/api/download/ytmp3?apikey=zenkey&url=${url}`)
-  const json = await apiRes.json()
+let handler = async (m, { conn, command, text, usedPrefix }) => {
+if (!text) return conn.reply(m.chat, `❀ Ingresa el nombre de la cancion que quieras buscar`, m)
 
-  if (json.status) {
-    const { result } = json
-    const { download } = result
-    await conn.sendMessage(m.chat, {
-      audio: { url: download.url },
-      caption: `*title:* ${title}\n*tamaño:* ${download.size}\n*calidad:* ${download.quality}`,
-      mimetype: "audio/mpeg",
-      contextInfo: infoReply.contextInfo
-    }, { quoted: m })
-  } else {
-    await m.reply("Gagal mengunduh audio")
-  }
-}
+try {
+let api = await fetch(`https://api.vreden.web.id/api/ytplaymp3?query=${text}`)
+let json = await api.json()
+let { title, thumbnail, timestamp, ago, views, author } = json.result.metadata
+let HS = `- *Titulo :* ${title}
+- *Duracion :* ${timestamp}
+- *Subido :* ${ago}
+- *Visitas :* ${views}
+- *Autor :* ${author.name}`
+await conn.sendFile(m.chat, thumbnail, 'HasumiBotFreeCodes.jpg', HS, m)
+await conn.sendFile(m.chat, json.result.download.url, 'HasumiBotFreeCodes.mp3', null, m)
+} catch (error) {
+console.error(error)
+}}
 
-handler.help = ["play <pencarian>"]
-handler.tags = ["downloader"]
-handler.command = /^(play|ytplay)$/i
-handler.limit = true
+handler.command = /^(play)$/i
 
 export default handler
