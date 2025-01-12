@@ -22,17 +22,21 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 if (!text) return conn.reply(m.chat, `❀ Ingresa un link de youtube`, m)
 
 try {
-let api = await fetch(`https://axeel.my.id/api/download/video?url=${text}`)
+let api = await fetch(`https://delirius-apiofc.vercel.app/download/ytmp4?url=${text}`)
 let json = await api.json()
-let { title, views, likes, description, author } = json.metadata
+let { title, author, image:img, id, views, likes, comments, duration, download } = json.data
 let HS = `- *Titulo :* ${title}
-- *Descripcion :* ${description}
+- *Autor :* ${author}
 - *Visitas :* ${views}
 - *Likes :* ${likes}
-- *Autor :* ${author}
-- *Tamaño :* ${json.downloads.size}
-`
-await conn.sendFile(m.chat, json.downloads.url, 'HasumiBotFreeCodes.mp4', HS, m)
+- *Comentarios :* ${comments}
+
+*[ INFO ARCHIVO AUDIO ]*
+
+- *Tamaño :* ${download.size}
+- *Calidad :* ${download.quality}`
+await conn.sendFile(m.chat, img, 'HasumiBotFreeCodes.jpg', HS, m)
+await await conn.sendMessage(m.chat, { video: { url: download.url }, fileName: `${title}.mp4`, mimetype: 'video/mp4', caption: `` }, { quoted: m })
 } catch (error) {
 console.error(error)
 }}
