@@ -18,6 +18,6 @@ await conn.sendFile(m.chat, dl_url, filename, null, m, null, { mimetype: ext, as
 console.error(error)
 }}
 
-HS.command = ['mediafire']
+HS.command = ['mf2']
 
 export default HS
