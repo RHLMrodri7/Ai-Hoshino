@@ -1,26 +1,40 @@
-import Starlights from "@StarlightsTeam/Scraper"
+/* 
+*❀ By JTxs*
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) return conn.reply(m.chat, '[ ✰ ] Ingresa el nombre de la aplicación que deseas descargar de *Aptoide* junto al comando.\n\n`» Ejemplo :`\n' + `> *${usedPrefix + command}* WhatsApp`, m, rcanal)
-await m.react('🕓')
+[ Canal Principal ] :
+https://whatsapp.com/channel/0029VaeQcFXEFeXtNMHk0D0n
+
+[ Canal Rikka Takanashi Bot ] :
+https://whatsapp.com/channel/0029VaksDf4I1rcsIO6Rip2X
+
+[ Canal StarlightsTeam] :
+https://whatsapp.com/channel/0029VaBfsIwGk1FyaqFcK91S
+
+[ HasumiBot FreeCodes ] :
+https://whatsapp.com/channel/0029Vanjyqb2f3ERifCpGT0W
+*/
+
+// *[ ❀ APK DL ]*
+import fetch from 'node-fetch'
+
+let handler = async (m, { conn, text }) => {
+if (!text) {
+return m.reply("❀ Ingresa el nomnbre de la app que quieres buscar")
+}
+    
 try {
-let { name, version, amount_downloads, size, thumbnail, dl_url } = await Starlights.aptoide(text)
-if (size.includes('GB') || size.replace(' MB', '') > 300) { return await m.reply('El archivo pesa mas de 300 MB, se canceló la Descarga.')}
-let txt = `*乂  A P T O I D E  -  D O W N L O A D*\n\n`
-    txt += `	✩   *Nombre* : ${name}\n`
-    txt += `	✩   *Version* : ${version}\n`
-    txt += `	✩   *Descargas* : ${amount_downloads}\n`
-    txt += `	✩   *Peso* :  ${size}\n\n`
-    txt += `*- ↻ El archivo se esta enviando espera un momento, soy lenta. . .*`
-await conn.sendFile(m.chat, thumbnail, 'thumbnail.jpg', txt, m, null, rcanal)
-await conn.sendMessage(m.chat, {document: { url: dl_url }, mimetype: 'application/vnd.android.package-archive', fileName: name + '.apk', caption: null }, {quoted: m})
-await m.react('✅')
-} catch {
-await m.react('✖️')
+let api = await fetch(`https://api.giftedtech.my.id/api/download/apkdl?apikey=gifted&appName=${text}`)
+let json = await api.json()
+let { appname, appicon, developer, download_url, mimetype } = json.result
+let txt = `- *Nombre* : ${appname}
+- *Creador* : ${developer}`
+
+await conn.sendFile(m.chat, appicon, 'HasumiBotFreeCodes.jpg', txt, m)
+await conn.sendMessage(m.chat, { document: { url: download_url }, mimetype: mimetype, fileName: appname + '.apk', caption: null }, {quoted: m})
+} catch (error) {
+console.error(error)
 }}
-handler.help = ['aptoide *<búsqueda>*']
-handler.tags = ['downloader']
-handler.command = ['aptoide', 'apk']
-handler.register = true 
-//handler.limit = 5
+
+handler.command = /^(apk)$/i
+
 export default handler
