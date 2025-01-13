@@ -23,11 +23,12 @@ let HS = `- *Titulo* : ${titulo}
 - *Link* : ${url}
 - *Duracion* : ${duracion}
 - *Calidad* ${calidad}`
-if (Tamaño > 100) {
+if (Tamaño > 300) {
 await conn.sendMessage(m.chat, { document: video, caption: HS, mimetype: 'video/mp4', fileName: `${titulo}.mp4`})
 } else {
 await conn.sendMessage(m.chat, { video: video, caption: HS, mimetype: 'video/mp4'})
 }
+ await conn.sendFile(m.chat, dl_url, fileName, null, m, null, { mimetype: ext, asDocument: true })
 } catch (error) {
 console.error(error)    
 }}
