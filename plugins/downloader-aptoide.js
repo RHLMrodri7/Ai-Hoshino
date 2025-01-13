@@ -6,7 +6,7 @@ return m.reply("Ingresa el nombre de la app que quieres buscar")
 }
     
 try {
-let api = await fetch(`https://api.dorratz.com/v2/apk-dl?${text}`)
+let api = await fetch(`https://api.dorratz.com/v2/apk-dl?=${text}`)
 let json = await api.json()
 let { name, creator, package, dllink, lastUpdate, size, icon,  mimetype } = json.result
 let txt = `- *Nombre* : ${name}
