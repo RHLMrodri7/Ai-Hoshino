@@ -1,31 +1,90 @@
-import Starlights from '@StarlightsTeam/Scraper'
-import fetch from 'node-fetch' 
-let limit = 300
+//CÓDIGO MODIFICADO POR DV.YER🇦🇱 NO SEAS CABRO NO QUITES LOS DERECHOS ↩️
+//Código de (SonGoku) Bot 
 
-let handler = async (m, { conn, args, text, isPrems, isOwner, usedPrefix, command }) => {
-if (!args[0]) return conn.reply(m.chat, '[ ✰ ] Ingresa el enlace del vídeo de *YouTube* junto al comando.\n\n`» Ejemplo :`\n' + `> *${usedPrefix + command}* https://youtu.be/QSvaCSt8ixs`, m, rcanal)
 
-await m.react('🕓')
-try {
-let { title, size, quality, thumbnail, dl_url } = await Starlights.ytmp4(args[0])
+import fetch from 'node-fetch';
 
-let img = await (await fetch(`${thumbnail}`)).buffer()
-if (size.split('MB')[0] >= limit) return conn.reply(m.chat, `El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
-	let txt = '`乂  Y O U T U B E  -  M P 4 D O C`\n\n'
-       txt += `	✩   *Titulo* : ${title}\n`
-       txt += `	✩   *Calidad* : ${quality}\n`
-       txt += `	✩   *Tamaño* : ${size}\n\n`
-       txt += `> *- ↻ El vídeo se esta enviando espera un momento, soy lenta. . .*`
-await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
-await conn.sendMessage(m.chat, { document: { url: dl_url }, caption: '', mimetype: 'video/mp4', fileName: `${title}` + `.mp4`}, {quoted: m })
-await m.react('✅')
-} catch {
-await m.react('✖️')
-}}
-handler.help = ['ytmp4doc *<link yt>*']
-handler.tags = ['downloader']
-handler.command = ['ytmp4doc', 'ytvdoc', 'ytdoc']
-//handler.limit = 1
-handler.register = true 
+let HS = async (m, { conn, text }) => {
+  if (!text) {
+    return conn.reply(
+      m.chat,
+      '*❌ Error:* Por favor, proporciona un enlace válido de YouTube para descargar el video.',
+      m
+    );
+  }
 
-export default handler
+  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+  if (!youtubeRegex.test(text)) {
+    return conn.reply(
+      m.chat,
+      '*❌ Error:* El enlace proporcionado no parece ser válido. Asegúrate de que sea un enlace de YouTube.',
+      m
+    );
+  }
+
+  let maxRetries = 4; 
+  let attempt = 0;
+  let success = false;
+
+  await conn.reply(
+    m.chat,
+    `⏳ *Descargando video en calidad 360p...*\nSi ocurre un error, se intentará hasta ${maxRetries} veces. Por favor, espera.`,
+    m
+  );
+
+  while (attempt < maxRetries && !success) {
+    try {
+      
+      let api = await fetch(`https://restapi.apibotwa.biz.id/api/ytmp4?url=${text}&quality=360`);
+      if (!api.ok) throw new Error('No se pudo obtener una respuesta de la API.');
+
+      let json = await api.json();
+      if (!json.data || !json.data.download) {
+        throw new Error('No se pudo obtener los datos del video. Verifica el enlace.');
+      }
+
+      let title = json.data.metadata.title || 'Sin título';
+      let dl_url = json.data.download.url;
+
+      await conn.reply(
+        m.chat,
+        '📤 *Enviando video en calidad 360p...*\nEsto puede tardar unos momentos dependiendo del tamaño del archivo.',
+        m
+      );
+
+      
+      await conn.sendMessage(
+        m.chat,
+        {
+          document: { url: dl_url },
+          fileName: `${title} (360p).mp4`,
+          mimetype: 'video/mp4',
+        },
+        { quoted: m }
+      );
+
+      conn.reply(
+        m.chat,
+        `✅ *Video enviado con éxito:*\n*Título:* ${title}\n*Calidad:* 360p\nGracias por usar el servicio.`,
+        m
+      );
+
+      success = true; 
+    } catch (error) {
+      console.error(error);
+      attempt++;
+    }
+  }
+
+  if (!success) {
+    conn.reply(
+      m.chat,
+      `❌ *Error:* No se pudo descargar y enviar el video después de ${maxRetries} intentos.\nPor favor, verifica el enlace e inténtalo nuevamente más tarde.`,
+      m
+    );
+  }
+};
+
+HS.command = ['ytmp4doc'];
+
+export default HS;
