@@ -47,7 +47,7 @@ await conn.sendFile(m.chat, url, 'instagram.jpg', HS, m)
 console.error(error)    
 }}
     
-handler.command = ['instagramdl', 'igdl']
+handler.command = ['instagramdl', 'ig']
 handler.tags = ['downloader']
 handler.help = ['ig <link>']
 export default handler
